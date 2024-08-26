@@ -2,6 +2,7 @@ import { Connection, KeyPair, PublicKey } from "@solana/web3.js";
 import { SolanaTracker } from "solana-swap";
 import { performSwap } from "./temp.js";
 import base58 from "bs58";
+require('dotenv').config();
 
 const TOKEN_ADDRESS = "";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
@@ -59,4 +60,29 @@ async function getTokenBalance(connection, walletAddress, tokenAddress) {
     }
 }
 
+async function main() {
+    const _keyPair = KeyPair.fromSecretKey(base58.decode(process.env.PRIVATE_KEY));
+    const solanaTracker = new SolanaTracker(_keyPair);
+    const connection = new Connection(env.RPC_URL);
 
+    while (true) {
+        const promises = [];
+
+        // Buy Token
+        promises.push(swap(SOL_ADDRESS, TOKEN_ADDRESS, solanaTracker, _keyPair, connection, SOL_BUY_AMOUNT));
+        promises.push(swap(SOL_ADDRESS, TOKEN_ADDRESS, solanaTracker, _keyPair, connection, SOL_BUY_AMOUNT));
+        promises.push(swap(SOL_ADDRESS, TOKEN_ADDRESS, solanaTracker, _keyPair, connection, SOL_BUY_AMOUNT));
+
+        await Promise.all(promises);
+
+        // Sell 
+        const tokenBalance = Math.round(await getTokenBalance(connection, _keyPair.publicKey, TOKEN_ADDRESS));
+        await swap(TOKEN_ADDRESS, SOL_ADDRESS, solanaTracker, _keyPair, connection, tokenBalance);
+
+        //Pause
+        await new Promise(r => setTimeout(r, 2000));
+    }
+}
+
+// Start Scripts
+main();
