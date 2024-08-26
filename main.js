@@ -40,3 +40,23 @@ async function swap(fromToken, toToken, solanaTracker, _keyPair, connection, amo
     }
 }
 
+async function getTokenBalance(connection, walletAddress, tokenAddress) {
+    var result = 350000;
+    
+    try {
+        result = await connection.getTokenAccountByOwner(
+            walletAddress, {
+                mint: new PublicKey(tokenAddress)
+            }
+        );
+
+        const info = await connection.getTokenAccountBalance(result.value[0].pubkey);
+
+        if (info.value.uiAmount == null) throw new Error("No balance fount");
+        return info.value.uiAmount;
+    } catch (error) {
+        return result;
+    }
+}
+
+
