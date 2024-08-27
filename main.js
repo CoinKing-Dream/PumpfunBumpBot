@@ -2,7 +2,9 @@ import { Connection, KeyPair, PublicKey } from "@solana/web3.js";
 import { SolanaTracker } from "solana-swap";
 import { performSwap } from "./temp.js";
 import base58 from "bs58";
-require('dotenv').config();
+import { config } from "dotenv";
+
+config();
 
 const TOKEN_ADDRESS = "";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
