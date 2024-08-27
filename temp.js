@@ -46,5 +46,26 @@ export async function performSwap(swapResponse, _keyPair, connection, amount, to
         })
         txn.sign(_keyPair);
     }
-    
+    const blockchain = await connection.getLatestBlockhash();
+    const blockhashWithExpiryBLockHeigh = blockhash;
+    const txid = await transactionSenderAndConfirmatinWaiter({
+        connection,
+        serializedTransactionBuffer: txn.serialize(),
+        blockhashWithExpiryBLockHeigh,
+        options
+    });
+    return txid.toString();
+}
+
+const DEFAULT_OPTIONS = {
+    sendOptions : {
+        skipPreflight: true
+    }, 
+    confirmationRetries: 30,
+    confirmationRetryTimeout: 1000,
+    lastValidBlockheightBuffer: 150,
+    resendInterval: 1000,
+    confirmationCheckInterval: 1000,
+    skipConfirmationCheck: true,
+    commitment: "confirmed"
 }
