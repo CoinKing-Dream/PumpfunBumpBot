@@ -4,3 +4,30 @@ import { Buffer } from "buffer";
 
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
 
+export async function performSwap(swapResponse, _keyPair, connection, amount, tokenIn, options = {
+    sendOptions: {skipPreflight: true},
+    confirmationRetries: 30,
+    confirmationRetryTimeout: 1000,
+    lastValidBlockHeightBuffer: 150,
+    resendInterval: 1000,
+    confirmationCheckInterval: 1000,
+    skipConfirmationCheck: false,
+}) {
+    let serializedTransactionBuffer;
+
+    try {
+        serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
+    } catch (error) {
+        const base64Str = swapResponse.txn;
+        const binaryStr = atob(base64Str);
+        const buffer = new Uint8Array(binaryStr.length);
+
+        for (let i = 0; i < binaryStr.length; i++) {
+            buffer[i] = binaryStr.charCodeAt(i);
+        }
+        serializedTransactionBuffer = buffer;
+    }
+    
+    let txn;
+    
+}
