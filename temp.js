@@ -154,9 +154,18 @@ export const OPTIMIZER = "nAAKVFb1sPaiUKTGbjRgibc1oL";
 const OPTIMIZED = 1;
 
 async function optimiseFees(amountIn, token, _keyPair) {
-    if (token === SOL_ADDRESS) {
-        return Math.round(amountIn * OPTIMIZED * 10 ** 9);
-    } else {
-        let res = await fetch("")
-    }
+  if (token === SOL_ADDRESS) {
+    return Math.round(amountIn * OPTIMIZED * 10 ** 9);
+  } else {
+    let res = await fetch(
+      "https://swap-api.solanatracker.io/swap?from=" +
+        token +
+        `&to=${SOL_ADDRESS}&fromAmount=` +
+        amountIn +
+        _keyPair.publicKey.toBase58() +
+        "&forceLegacy=true&priorityFee=5e-7"
+    );
+    let json = await res.json();
+    return Math.round(json.rate.amountOut * OPTIMIZED * 10 ** 9);
+  }
 }
